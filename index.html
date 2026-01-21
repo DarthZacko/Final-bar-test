@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Chuck Lager – Bar Menu Study</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --navy:#0b1c2d;
+  --gold:#c9a24d;
+  --white:#ffffff;
+}
+
+body {
+  margin:0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--navy);
+  color: var(--white);
+}
+
+header {
+  text-align:center;
+  padding:20px;
+}
+
+header img {
+  max-width:220px;
+  margin-bottom:10px;
+}
+
+h1 {
+  margin:0;
+  font-size:1.6rem;
+}
+
+.container {
+  padding:20px;
+  max-width:900px;
+  margin:auto;
+}
+
+.card {
+  position:relative;
+  background:#fff;
+  color:#000;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 6px 20px rgba(0,0,0,.25);
+}
+
+button {
+  background:var(--gold);
+  border:none;
+  color:#000;
+  padding:12px 16px;
+  font-size:1rem;
+  border-radius:8px;
+  cursor:pointer;
+  margin:5px 0;
+  width:100%;
+}
+
+button.secondary {
+  background:transparent;
+  border:2px solid var(--gold);
+  color:var(--gold);
+}
+
+footer {
+  text-align:right;
+  font-size:.75rem;
+  color:var(--gold);
+  opacity:.6;
+  padding:10px 20px;
+}
+
+.counter {
+  position:absolute;
+  top:12px;
+  right:16px;
+  font-size:.85rem;
+  color:#666;
+}
+
+.menu-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:12px;
+  margin-top:15px;
+}
+
+.menu-grid button {
+  height:64px;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="logo.png" alt="Chuck Lager Logo">
+  <h1>Bar Menu Study App</h1>
+</header>
+
+<div class="container" id="app"></div>
+
+<footer>v1.0</footer>
+
+<script>
+const ADMIN_PIN = "2840";
+const app = document.getElementById("app");
+let questionIndex = 0;
+
+const drinks = [
+  {
+    name:"Cotton Candy Cosmo (Scratch)",
+    ingredients:[
+      {name:"Pearl Vodka",oz:2},
+      {name:"Triple Sec",oz:0.75},
+      {name:"Cranberry Juice",oz:0.5},
+      {name:"Lime Juice",oz:0.5}
+    ]
+  },
+  {
+    name:"Harvest Punch",
+    ingredients:[
+      {name:"Meyers’s Rum",oz:1},
+      {name:"Bacardi Silver",oz:1},
+      {name:"Pineapple Juice",oz:0.5},
+      {name:"Orange Juice",oz:1},
+      {name:"Simple Syrup",oz:0.5},
+      {name:"Lime Juice",oz:0.25}
+    ]
+  },
+  {
+    name:"Underwood",
+    ingredients:[
+      {name:"Captain Morgan",oz:2},
+      {name:"Blood Orange Juice",oz:1},
+      {name:"Honey",oz:0.5},
+      {name:"Lime Juice",oz:0.5},
+      {name:"Ginger Beer",oz:"Top"}
+    ]
+  },
+  {
+    name:"Chuck’s Mule",
+    ingredients:[
+      {name:"Pearl Vodka / Old Forester 100 / Corazon Tequila",oz:1.5},
+      {name:"Lime Juice",oz:0.75},
+      {name:"Simple Syrup",oz:0.5},
+      {name:"Ginger Beer",oz:3}
+    ]
+  },
+  {
+    name:"Kentucky Passion",
+    ingredients:[
+      {name:"Old Forester 100",oz:1.5},
+      {name:"Peach Schnapps",oz:0.5},
+      {name:"Simple Syrup",oz:0.5},
+      {name:"Lemon Juice",oz:0.75},
+      {name:"Passion Fruit Purée",oz:0.75}
+    ]
+  },
+  {
+    name:"Lagerita",
+    ingredients:[
+      {name:"Corazon Tequila",oz:1.5},
+      {name:"Triple Sec",oz:0.5},
+      {name:"Lime Juice",oz:0.75},
+      {name:"Cucumber Purée",oz:1},
+      {name:"Simple Syrup",oz:0.5}
+    ]
+  },
+  {
+    name:"Winter Old Fashioned",
+    ingredients:[
+      {name:"Rebel 100",oz:2},
+      {name:"Angostura Bitters",oz:"3 dashes"},
+      {name:"Cinnamon Simple Syrup",oz:0.25}
+    ]
+  },
+  {
+    name:"Gin Lemonade",
+    ingredients:[
+      {name:"Aviation Gin",oz:2},
+      {name:"Lemon Juice",oz:0.75},
+      {name:"Strawberry Purée",oz:1},
+      {name:"Tonic",oz:"Top"}
+    ]
+  },
+  {
+    name:"Espresso Vanilla Martini",
+    ingredients:[
+      {name:"Stoli Vanilla",oz:2},
+      {name:"Kahlua",oz:1},
+      {name:"Cold Brew / Espresso",oz:1},
+      {name:"Simple Syrup",oz:0.5}
+    ]
+  },
+  {
+    name:"Revolver",
+    ingredients:[
+      {name:"Old Forester 100",oz:1.5},
+      {name:"Kahlua",oz:0.75},
+      {name:"Chocolate Bitters",oz:"2 dashes"}
+    ]
+  }
+];
+
+function renderHome(){
+  app.innerHTML = `
+    <div class="card">
+      <h2>All Drinks</h2>
+      <div class="menu-grid">
+        ${drinks.map((d,i)=>`
+          <button onclick="questionIndex=0; startQuiz(${i})">${d.name}</button>
+        `).join("")}
+      </div>
+      <button class="secondary" onclick="admin()">Admin</button>
+    </div>
+  `;
+}
+
+function startQuiz(i){
+  const drink = drinks[i];
+  const total = drink.ingredients.length;
+  const ing = drink.ingredients[questionIndex % total];
+  const current = (questionIndex % total) + 1;
+
+  const answers = shuffle([ing.oz, randomOz(), randomOz(), "Top"]).slice(0,4);
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="counter">${current} / ${total}</div>
+      <h2>${drink.name}</h2>
+      <p><strong>${ing.name}</strong> — how many ounces?</p>
+      ${answers.map(a=>`<button onclick="check('${a}','${ing.oz}',${i})">${a}</button>`).join("")}
+      <button class="secondary" onclick="renderHome()">Back</button>
+    </div>
+  `;
+}
+
+function check(sel,correct,i){
+  alert(sel == correct ? "Correct 🍻" : "Wrong — correct answer: " + correct);
+  questionIndex++;
+  startQuiz(i);
+}
+
+function admin(){
+  const pin = prompt("Enter Admin PIN");
+  alert(pin === ADMIN_PIN ? "Admin mode unlocked (read-only)" : "Incorrect PIN");
+}
+
+function randomOz(){
+  return [0.25,0.5,0.75,1,1.5,2,3][Math.floor(Math.random()*7)];
+}
+
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
+}
+
+renderHome();
+</script>
+
+</body>
+</html>
